@@ -3,9 +3,16 @@ import logging
 import functools
 
 class FileNotFound(Exception):
+    """
+    Exception raised when the specified file path does not exist.
+    """
     pass
 
 class FileCorrupted(Exception):
+    """
+    Exception raised when an input/output operation on the file fails
+    (e.g., reading, writing, or permissions issues).
+    """
     pass
 
 
@@ -47,9 +54,16 @@ def logged(exception_types, mode=None):
     return decorator
 
 
-class FileHandler:
+class TextFileManager:
+    """
+    A class to manage basic text file operations such as reading, 
+    writing, and appending content.
+    
+    Attributes:
+        path (str): The absolute path to the text file.
+    """
 
-    @logged((FileNotFound, FileCorrupted))
+    @logged((FileNotFound, ValueError))
     def __init__(self, path):
         self.path = os.path.abspath(path)
 
@@ -57,7 +71,7 @@ class FileHandler:
             raise FileNotFound("Файл не знайдено.")
 
         if not self.path.endswith(".txt"):
-            raise FileCorrupted("Потрібен текстовий файл з розширенням .txt")
+            raise ValueError("Потрібен текстовий файл з розширенням .txt")
 
     @logged(FileCorrupted)
     def read(self):
@@ -93,7 +107,7 @@ if __name__ == "__main__":
     file_path = input("\nВведіть шлях до текстового файлу: ")
 
     try:
-        fh = FileHandler(file_path)
+        fh = TextFileManager(file_path)
     except Exception as e:
         print("Помилка:", e)
         exit()
